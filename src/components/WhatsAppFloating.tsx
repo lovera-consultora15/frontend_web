@@ -2,12 +2,12 @@ import { MessageCircle } from "lucide-react";
 
 export default function WhatsAppFloating() {
   const message = encodeURIComponent(
-    "Hola 👋 Me gustaría hacer una consulta sobre Lovera Consultoría."
+    "Hola 👋 Me gustaría hacer una consulta sobre Lovera Consultora Contable.",
   );
 
   return (
     <a
-      href={`https://wa.me/549XXXXXXXXXX?text=${message}`}
+      href={`https://api.whatsapp.com/send?phone=5493704319277&text=${message}`}
       target="_blank"
       rel="noopener noreferrer"
       className="

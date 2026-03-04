@@ -310,7 +310,6 @@ export default function Home() {
             shadow-[0_12px_40px_rgba(0,0,0,0.08)]
             hover:border-slate-900
             flex flex-col
-            cursor-pointer
           "
               >
                 {/* Icono */}
@@ -326,7 +325,7 @@ export default function Home() {
                   {card.title}
                 </h3>
 
-                <ul className="space-y-4 mb-10">
+                <ul className="space-y-4">
                   {card.items.map((item, idx) => (
                     <li key={idx} className="flex gap-3">
                       <Check size={16} className="text-slate-900 mt-1" />
@@ -336,11 +335,6 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-
-                <span className="mt-auto inline-flex items-center gap-2 text-slate-900 font-semibold text-sm">
-                  Ver más
-                  <ArrowRight size={16} />
-                </span>
               </motion.div>
             ))}
           </motion.div>

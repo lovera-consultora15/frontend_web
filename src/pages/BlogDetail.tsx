@@ -1,79 +1,105 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar } from "lucide-react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import { Variants } from "framer-motion";
-import { articulos } from "../data/articulos";
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+import { Calendar, ArrowLeft } from "lucide-react";
+import WhatsAppFloating from "../components/WhatsAppFloating";
+import { getPostById, Post } from "../api/posts";
+import ArticleContact from "../components/ArticleContact";
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const articulo = articulos.find(
-    (a: (typeof articulos)[0]) => a.id === Number(id)
-  );
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!articulo) {
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        if (id) {
+          const data = await getPostById(id);
+          setPost(data);
+        }
+      } catch (error) {
+        console.error("Error cargando noticia:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  if (loading) {
     return (
-      <>
-        <Header />
-        <main className="bg-[#121212] min-h-screen flex items-center justify-center text-slate-300">
-          Artículo no encontrado
-        </main>
-        <Footer />
-      </>
+      <main className="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
+        <p className="text-slate-400 text-lg">Cargando noticia...</p>
+      </main>
+    );
+  }
+
+  if (!post) {
+    return (
+      <main className="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center">
+        <p className="text-red-400 text-lg">Noticia no encontrada</p>
+      </main>
     );
   }
 
   return (
-    <>
-      <Header />
+    <main className="bg-slate-900 text-slate-100 min-h-screen">
+      <div className="max-w-4xl mx-auto px-6 py-32">
+        {/* Botón volver */}
+        <Link
+          to="/blog"
+          className="inline-flex items-center gap-2 text-yellow-400 hover:text-yellow-300 mb-12"
+        >
+          <ArrowLeft size={18} />
+          Volver a noticias
+        </Link>
 
-      <main className="bg-[#121212] text-slate-100">
-        <div className="max-w-4xl mx-auto px-6 py-32">
-          <motion.div initial="hidden" animate="visible" variants={fadeUp}>
-            <Link
-              to="/blog"
-              className="inline-flex items-center gap-2 text-yellow-400 mb-8 hover:text-yellow-300 transition"
-            >
-              <ArrowLeft size={18} />
-              Volver al blog
-            </Link>
+        {/* Imagen principal */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12 overflow-hidden rounded-3xl shadow-2xl"
+        >
+          <img
+            src={post.image_url}
+            alt={post.title}
+            className="w-full h-[450px] object-cover"
+          />
+        </motion.div>
 
-            <img
-              src={articulo.image}
-              alt={articulo.title}
-              className="w-full h-[420px] object-cover rounded-3xl mb-10"
-            />
-
-            <div className="flex items-center gap-6 mb-6">
-              <span className="bg-yellow-500 text-black text-xs font-semibold px-3 py-1 rounded-full">
-                {articulo.category}
-              </span>
-              <span className="text-slate-400 text-sm flex items-center gap-1">
-                <Calendar size={14} />
-                {articulo.date}
-              </span>
-            </div>
-
-            <h1 className="text-4xl font-extrabold mb-6">{articulo.title}</h1>
-
-            <p className="text-slate-300 text-lg leading-relaxed">
-              {articulo.content}
-            </p>
-          </motion.div>
+        {/* Fecha */}
+        <div className="flex items-center gap-2 text-slate-400 mb-6">
+          <Calendar size={16} />
+          <span>{new Date(post.created_at).toLocaleDateString()}</span>
         </div>
-      </main>
 
-      <Footer />
-    </>
+        {/* Título */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-5xl font-extrabold mb-10 leading-tight"
+        >
+          {post.title}
+        </motion.h1>
+
+        {/* Contenido */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-slate-300 text-lg leading-relaxed space-y-6"
+        >
+          <p className="whitespace-pre-line">{post.content}</p>
+        </motion.div>
+      </div>
+      <ArticleContact />
+      <WhatsAppFloating />
+    </main>
   );
 }

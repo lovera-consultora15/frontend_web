@@ -16,6 +16,13 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const routes = {
+    Inicio: "/home",
+    Servicios: "/servicios",
+    Noticias: "/noticias",
+    Contacto: "/contacto",
+  };
+
   return (
     <header
       className={`
@@ -31,7 +38,7 @@ export default function Header() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-16">
         <div className="flex justify-between items-center h-24">
           {/* LOGO */}
-          <Link to="/" className="flex items-center">
+          <Link to="/home" className="flex items-center">
             <img
               src={logo}
               alt="Lovera Estudio Contable"
@@ -47,18 +54,17 @@ export default function Header() {
 
           {/* NAV DESKTOP */}
           <nav className="hidden md:flex items-center gap-14 text-xl font-semibold text-[#e9eef0]">
-            {["Inicio", "Servicios", "Noticias", "Contacto"].map((item) => (
+            {Object.entries(routes).map(([label, path]) => (
               <Link
-                key={item}
-                to={`/${item === "Inicio" ? "" : item.toLowerCase()}`}
+                key={label}
+                to={path}
                 className="
-                  relative
                   transition-all duration-300
                   hover:text-[#e9c579]
                   hover:scale-105
                 "
               >
-                {item}
+                {label}
               </Link>
             ))}
           </nav>
@@ -86,14 +92,14 @@ export default function Header() {
               shadow-[0_20px_60px_rgba(0,0,0,0.6)]
             "
           >
-            {["Inicio", "Servicios", "Noticias", "Contacto"].map((item) => (
+            {Object.entries(routes).map(([label, path]) => (
               <Link
-                key={item}
-                to={`/${item === "Inicio" ? "" : item.toLowerCase()}`}
+                key={label}
+                to={path}
                 onClick={() => setIsOpen(false)}
                 className="hover:text-[#e9c579] transition"
               >
-                {item}
+                {label}
               </Link>
             ))}
           </nav>

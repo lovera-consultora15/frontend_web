@@ -40,7 +40,7 @@ Email: ${formData.email || "No informado"}
 
     window.open(
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      "_blank"
+      "_blank",
     );
   };
 
@@ -69,7 +69,7 @@ Email: ${formData.email || "No informado"}
           {/* TEXTO */}
           <div>
             <h2 className="text-4xl md:text-5xl font-extrabold text-earth-900 mb-8 leading-tight">
-              Empecemos a ordenar tu negocio
+              Contáctanos!!
             </h2>
 
             <p className="text-xl text-slate-700 leading-relaxed max-w-xl">

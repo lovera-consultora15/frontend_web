@@ -14,33 +14,45 @@ const buttonMotion = {
 };
 
 export default function ContactForm() {
-  const WHATSAPP_NUMBER = "5493704084186";
-
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const message = `
-Hola 👋  
-Quiero realizar una consulta desde la web de Lovera Consultoría.
+    setLoading(true);
+    setSuccess(false);
 
-Nombre: ${formData.name}
-Teléfono: +54 ${formData.phone}
-Email: ${formData.email || "No informado"}
-    `;
+    try {
+      const res = await fetch("http://localhost:4000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+      if (!res.ok) {
+        throw new Error("Error enviando formulario");
+      }
+
+      setSuccess(true);
+      setFormData({ name: "", phone: "", email: "" });
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al enviar la consulta ❌");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -68,7 +80,7 @@ Email: ${formData.email || "No informado"}
           {/* TEXTO */}
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-earth-900 mb-8 leading-tight">
-              Empecemos a ordenar tu negocio
+              Contáctanos
             </h2>
 
             <p className="text-xl text-slate-700 leading-relaxed max-w-xl">
@@ -88,18 +100,10 @@ Email: ${formData.email || "No informado"}
                 type="text"
                 name="name"
                 required
+                value={formData.name}
                 onChange={handleChange}
                 placeholder="Juan Pérez"
-                className="
-                  w-full rounded-xl
-                  bg-white
-                  border-2 border-brand-400/40
-                  px-6 py-4
-                  text-slate-800
-                  focus:border-brand-600
-                  focus:ring-2 focus:ring-brand-400/40
-                  outline-none transition
-                "
+                className="w-full rounded-xl bg-white border-2 border-brand-400/40 px-6 py-4 text-slate-800 focus:border-brand-600 focus:ring-2 focus:ring-brand-400/40 outline-none transition"
               />
             </div>
 
@@ -109,31 +113,17 @@ Email: ${formData.email || "No informado"}
                 Teléfono *
               </label>
               <div className="flex">
-                <span
-                  className="
-                    flex items-center px-5
-                    rounded-l-xl
-                    bg-brand-600 text-white
-                    font-semibold
-                  "
-                >
+                <span className="flex items-center px-5 rounded-l-xl bg-brand-600 text-white font-semibold">
                   +54
                 </span>
                 <input
                   type="tel"
                   name="phone"
                   required
+                  value={formData.phone}
                   onChange={handleChange}
                   placeholder="9 11 2345 6789"
-                  className="
-                    w-full rounded-r-xl
-                    bg-white
-                    border-2 border-brand-400/40
-                    px-6 py-4
-                    focus:border-brand-600
-                    focus:ring-2 focus:ring-brand-400/40
-                    outline-none transition
-                  "
+                  className="w-full rounded-r-xl bg-white border-2 border-brand-400/40 px-6 py-4 focus:border-brand-600 focus:ring-2 focus:ring-brand-400/40 outline-none transition"
                 />
               </div>
             </div>
@@ -146,19 +136,19 @@ Email: ${formData.email || "No informado"}
               <input
                 type="email"
                 name="email"
+                value={formData.email}
                 onChange={handleChange}
                 placeholder="correo@email.com"
-                className="
-                  w-full rounded-xl
-                  bg-white
-                  border-2 border-brand-400/40
-                  px-6 py-4
-                  focus:border-brand-600
-                  focus:ring-2 focus:ring-brand-400/40
-                  outline-none transition
-                "
+                className="w-full rounded-xl bg-white border-2 border-brand-400/40 px-6 py-4 focus:border-brand-600 focus:ring-2 focus:ring-brand-400/40 outline-none transition"
               />
             </div>
+
+            {/* MENSAJE DE ÉXITO */}
+            {success && (
+              <p className="text-green-600 font-semibold">
+                ✅ Consulta enviada correctamente. Te responderemos pronto.
+              </p>
+            )}
 
             {/* CTA */}
             <motion.button
@@ -166,16 +156,10 @@ Email: ${formData.email || "No informado"}
               whileTap="tap"
               variants={buttonMotion}
               type="submit"
-              className="
-                w-full mt-4
-                inline-flex items-center justify-center gap-3
-                bg-brand-500 text-earth-900
-                px-10 py-4 rounded-full
-                text-base font-bold
-                tracking-wide
-              "
+              disabled={loading}
+              className="w-full mt-4 inline-flex items-center justify-center gap-3 bg-brand-500 text-earth-900 px-10 py-4 rounded-full text-base font-bold tracking-wide disabled:opacity-60"
             >
-              Consultar por WhatsApp
+              {loading ? "Enviando..." : "Enviar consulta"}
               <ArrowRight size={18} />
             </motion.button>
           </form>

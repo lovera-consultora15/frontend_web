@@ -95,18 +95,18 @@ export default function Servicios() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: i * 0.06 }}
                   className="
-              relative
-              bg-white
-              rounded-2xl
-              p-8
-              border border-[#e9c579]/40
-              shadow-xl
-              transition
-              hover:-translate-y-2
-              hover:shadow-2xl
-              group
-              flex flex-col
-            "
+    relative
+    bg-white
+    rounded-2xl
+    p-8
+    border border-[#e9c579]/40
+    shadow-xl
+    transition
+    hover:-translate-y-2
+    hover:shadow-2xl
+    group
+    flex flex-col
+  "
                 >
                   {/* líneas hover */}
                   <span className="absolute top-0 left-0 h-[2px] w-0 bg-[#e9c579] transition-all duration-300 group-hover:w-full" />
@@ -121,7 +121,7 @@ export default function Servicios() {
                   </h3>
 
                   {/* lista */}
-                  <ul className="space-y-2 text-slate-700 text-sm mb-10">
+                  <ul className="space-y-2 text-slate-700 text-sm">
                     {servicio.items.map((item, idx) => (
                       <li key={idx} className="flex gap-2">
                         <span className="text-[#e9c579]">•</span>
@@ -129,24 +129,6 @@ export default function Servicios() {
                       </li>
                     ))}
                   </ul>
-
-                  {/* botón */}
-                  <button
-                    className="
-                mt-auto
-                inline-flex items-center gap-3
-                text-base font-semibold
-                text-[#d4aa3f]
-                transition-all
-                group-hover:gap-4
-                hover:text-[#b8922e]
-              "
-                  >
-                    Leer más
-                    <span className="transition-transform group-hover:translate-x-1">
-                      →
-                    </span>
-                  </button>
                 </motion.div>
               );
             })}

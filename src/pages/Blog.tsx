@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-
 import { Link } from "react-router-dom";
 import { Calendar, ArrowRight } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import WhatsAppFloating from "../components/WhatsAppFloating";
-import { articulos } from "../data/articulos";
+import { getPosts, Post } from "../api/posts";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
@@ -22,7 +21,22 @@ const stagger: Variants = {
 
 export default function Blog() {
   const ITEMS_PER_PAGE = 6;
+
+  const [posts, setPosts] = useState<Post[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await getPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error cargando noticias:", error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   useEffect(() => {
     window.scrollTo({
@@ -31,12 +45,9 @@ export default function Blog() {
     });
   }, [currentPage]);
 
-  const totalPages = Math.ceil(articulos.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentArticles = articulos.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
+  const currentArticles = posts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <main className="bg-slate-900 text-slate-100">
@@ -64,10 +75,10 @@ export default function Blog() {
 
         {/* CARDS */}
         <motion.section
-          key={currentPage} // 👈 CLAVE
+          key={currentPage}
           variants={stagger}
           initial="hidden"
-          animate="visible" // 👈 NO whileInView
+          animate="visible"
           className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10"
         >
           {currentArticles.map((art) => (
@@ -80,7 +91,7 @@ export default function Blog() {
               {/* Imagen */}
               <div className="overflow-hidden">
                 <motion.img
-                  src={art.image}
+                  src={art.image_url}
                   alt={art.title}
                   className="h-56 w-full object-cover"
                   whileHover={{ scale: 1.05 }}
@@ -92,19 +103,21 @@ export default function Blog() {
               <div className="p-8">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-semibold text-black bg-yellow-500 px-3 py-1 rounded-full">
-                    {art.category}
+                    Noticia
                   </span>
                   <span className="text-xs text-slate-400 flex items-center gap-1">
                     <Calendar size={14} />
-                    {art.date}
+                    {new Date(art.created_at).toLocaleDateString()}
                   </span>
                 </div>
 
                 <h2 className="text-2xl font-bold mb-3">{art.title}</h2>
-                <p className="text-slate-300 mb-4">{art.excerpt}</p>
+                <p className="text-slate-300 mb-4">
+                  {art.content.slice(0, 120)}...
+                </p>
 
                 <Link
-                  to={`/blog/${art.id}`}
+                  to={`/noticia/${art.id}`}
                   className="inline-flex items-center gap-2 text-yellow-400 font-semibold hover:text-yellow-300 group"
                 >
                   Leer artículo
@@ -118,7 +131,7 @@ export default function Blog() {
           ))}
         </motion.section>
 
-        {/* ✅ PAGINACIÓN VA ACÁ, FUERA DEL GRID */}
+        {/* PAGINACIÓN */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
